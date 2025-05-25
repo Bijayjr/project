@@ -212,13 +212,14 @@ export default function Home() {
     if (houseImageRef.current) {
       const houseImage = houseImageRef.current;
       const newSection = document.querySelector('.why-choose-us-section');
+      const isMobile = window.innerWidth < 768; // Check if screen is mobile
 
-      if (newSection) {
+      if (newSection && !isMobile) {
         gsap.to(houseImage, {
           x: 300,
           y: 780,
           opacity: 1,
-          zIndex: 2000, // Ensure it appears above the glassmorphism effect
+          zIndex: 2000,
           ease: 'power1.out',
           scrollTrigger: {
             trigger: newSection,
@@ -651,7 +652,7 @@ export default function Home() {
             </h3>
             <AnimatePresence>
               {nearbyProperties.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {nearbyProperties.map((property) => (
                     <motion.div
                       key={property.id}
@@ -664,9 +665,11 @@ export default function Home() {
                       } border border-gray-500/20 hover:shadow-2xl transition-all duration-300`}
                       onClick={() => handlePropertyClick(property)}
                     >
-                      <img
+                      <Image
                         src={property.image}
                         alt={property.title}
+                        width={400}
+                        height={300}
                         className="w-full h-52 object-cover rounded-lg mb-4"
                       />
                       <h4 className="text-lg font-semibold">{property.title}</h4>
@@ -806,7 +809,7 @@ export default function Home() {
             className={`p-6 rounded-xl backdrop-blur-lg ${
               darkMode ? 'bg-gray-800/30' : 'bg-white/30'
             } shadow-xl border border-gray-500/20 transition-colors duration-500 mb-12 why-choose-us-section`}
-            style={{ height: '100vh' }}
+            style={{ minHeight: '100vh' }}
           >
             <h3 className="text-xl font-semibold mb-6 flex items-center justify-center">
               <svg
@@ -822,7 +825,7 @@ export default function Home() {
               </svg>
               Why Choose Us
             </h3>
-            <div className="grid grid-cols-2 grid-rows-2 gap-4 h-[80%]">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-4 h-[80%]">
               <motion.div
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -840,7 +843,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: false, margin: "-100px" }}
                 transition={{ duration: 0.6, delay: 0.4 }}
-                className={`p-4 max-w-sm text-right ml-auto ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}
+                className={`p-4 max-w-sm md:ml-auto ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}
               >
                 <h4 className="text-lg font-semibold mb-2 text-emerald-400">Local Expertise</h4>
                 <p className="text-sm">
@@ -852,7 +855,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: false, margin: "-100px" }}
                 transition={{ duration: 0.6, delay: 0.6 }}
-                className={`p-4 max-w-sm self-end ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}
+                className={`p-4 max-w-sm md:self-end ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}
               >
                 <h4 className="text-lg font-semibold mb-2 text-emerald-400">Seamless Experience</h4>
                 <p className="text-sm">
@@ -864,10 +867,10 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: false, margin: "-100px" }}
                 transition={{ duration: 0.6, delay: 0.8 }}
-                className={`p-4 max-w-sm self-end text-right ml-auto ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}
+                className={`p-4 max-w-sm md:self-end md:ml-auto ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}
               >
                 <h4 className="text-lg font-semibold mb-2 text-emerald-400">Cultural Immersion</h4>
-                <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                <p className="text-sm">
                   Live like a local with Rento&apos;s homes, designed to immerse you in Bhutan&apos;s vibrant culture, from proximity to sacred sites to interiors reflecting traditional craftsmanship.
                 </p>
               </motion.div>
@@ -988,20 +991,20 @@ export default function Home() {
                   </div>
                   <div className="flex items-center">
                     <div className={`p-2 rounded-full mr-2 ${darkMode ? 'bg-gray-700/50' : 'bg-gray-100/50'}`}>
-  <svg
-    className="h-5 w-5 text-emerald-400"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"
-    />
-  </svg>
-</div>
+                      <svg
+                        className="h-5 w-5 text-emerald-400"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"
+                        />
+                      </svg>
+                    </div>
                     <div>
                       <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Size</p>
                       <p className="font-medium">1,200 sqft</p>
