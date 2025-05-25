@@ -23,6 +23,7 @@ const Map = ({ properties, activeLocation, onMarkerClick, darkMode, userLocation
     L.latLng(28.3, 92.1)  // NE corner
   );
   const thimphu = [27.4728, 89.6390];
+  const phuentsholing = [26.8517, 89.3883];
   const defaultZoom = 12;
   const userLocationZoom = 14;
 
@@ -108,15 +109,126 @@ const Map = ({ properties, activeLocation, onMarkerClick, darkMode, userLocation
       mapInstanceRef.current.setView(activeLocation, defaultZoom);
       console.log('Map View Updated: Centered on activeLocation', { activeLocation, zoom: defaultZoom });
     } else if (hasUserSearched.current) {
-      mapInstanceRef.current.setView(thimphu, defaultZoom);
-      console.log('Map View Updated: Fallback to Thimphu', { center: thimphu, zoom: defaultZoom });
+      mapInstanceRef.current.setView(phuentsholing, defaultZoom);
+      console.log('Map View Updated: Fallback to Phuentsholing', { center: phuentsholing, zoom: defaultZoom });
     }
   }, [activeLocation, userLocation, centerOnUserLocation]);
+
+  // Add or update user location marker
+  useEffect(() => {
+    if (!mapInstanceRef.current) {
+      console.warn('Map not initialized for user marker');
+      return;
+    }
+
+    console.log('User Location Prop:', { userLocation });
+
+    if (
+      !userLocation ||
+      !Array.isArray(userLocation) ||
+      userLocation.length !== 2 ||
+      !isFinite(userLocation[0]) ||
+      !isFinite(userLocation[1])
+    ) {
+      console.warn('Invalid userLocation, skipping marker:', { userLocation });
+      return;
+    }
+
+    // Create a custom blue marker icon with pulsing effect
+    const blueIcon = L.divIcon({
+      className: 'custom-blue-marker',
+      html: `
+        <div style="
+          position: relative;
+          width: 30px;
+          height: 30px;
+        ">
+          <div style="
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background-color: #3B82F6;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            animation: pulse 2s infinite;
+          "></div>
+          <div style="
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background-color: white;
+            border-radius: 50%;
+          "></div>
+        </div>
+        <style>
+          @keyframes pulse {
+            0% {
+              transform: translate(-50%, -50%) scale(1);
+              opacity: 1;
+            }
+            50% {
+              transform: translate(-50%, -50%) scale(1.2);
+              opacity: 0.8;
+            }
+            100% {
+              transform: translate(-50%, -50%) scale(1);
+              opacity: 1;
+            }
+          }
+        </style>
+      `,
+      iconSize: [30, 30],
+      iconAnchor: [15, 15],
+    });
+
+    // Remove existing user marker if it exists
+    if (userMarkerRef.current) {
+      userMarkerRef.current.remove();
+    }
+
+    // Create new user marker
+    userMarkerRef.current = L.marker(userLocation, {
+      icon: blueIcon,
+      zIndexOffset: 2000,
+    })
+      .addTo(mapInstanceRef.current)
+      .bindPopup('Your Location')
+      .openPopup();
+
+    // Add a circle around the marker for better visibility
+    const accuracyCircle = L.circle(userLocation, {
+      radius: 50,
+      color: '#3B82F6',
+      fillColor: '#3B82F6',
+      fillOpacity: 0.1,
+      weight: 1,
+    }).addTo(mapInstanceRef.current);
+
+    console.log('User Marker Added:', { userLocation });
+
+    // Cleanup function
+    return () => {
+      if (userMarkerRef.current) {
+        userMarkerRef.current.remove();
+      }
+      if (accuracyCircle) {
+        accuracyCircle.remove();
+      }
+    };
+  }, [userLocation]);
 
   // Update markers when properties change
   useEffect(() => {
     if (!mapInstanceRef.current) return;
 
+    // Remove only property markers, not the user marker
     markersRef.current.forEach(marker => marker.remove());
     markersRef.current = [];
 
@@ -148,55 +260,6 @@ const Map = ({ properties, activeLocation, onMarkerClick, darkMode, userLocation
       });
     }
   }, [properties, onMarkerClick]);
-
-  // Add or update user location marker
-  useEffect(() => {
-    if (!mapInstanceRef.current) {
-      console.warn('Map not initialized for user marker');
-      return;
-    }
-
-    console.log('User Location Prop:', { userLocation });
-
-    if (
-      !userLocation ||
-      !Array.isArray(userLocation) ||
-      userLocation.length !== 2 ||
-      !isFinite(userLocation[0]) ||
-      !isFinite(userLocation[1])
-    ) {
-      console.warn('Invalid userLocation, skipping marker:', { userLocation });
-      return;
-    }
-
-    const blueIcon = new L.Icon({
-      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
-      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41],
-      // Fallback to default Leaflet icon if blue icon fails
-      iconUrlFallback: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-    });
-
-    if (userMarkerRef.current) {
-      userMarkerRef.current.setLatLng(userLocation);
-      console.log('User Marker Updated:', { userLocation });
-    } else {
-      userMarkerRef.current = L.marker(userLocation, {
-        icon: blueIcon,
-        zIndexOffset: 2000, // Increased to ensure visibility
-      })
-        .addTo(mapInstanceRef.current)
-        .bindPopup('Your Location')
-        .openPopup();
-      console.log('User Marker Added:', { userLocation });
-      // Verify marker in DOM
-      const markerElement = document.querySelector(`img[src$='marker-icon-2x-blue.png'], img[src$='marker-icon.png']`);
-      console.log('User Marker DOM Check:', { isPresent: !!markerElement, src: markerElement?.src });
-    }
-  }, [userLocation]);
 
   return (
     <div

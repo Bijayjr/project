@@ -1,4 +1,3 @@
-// app/api/property/[id]/route.js
 import { PrismaClient } from '@prisma/client';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
@@ -16,7 +15,7 @@ export async function PUT(req, { params }) {
     const { title, location, price, availability, amenities, images } = await req.json();
 
     const property = await prisma.property.findUnique({
-      where: { id: parseInt(id) },
+      where: { id }, // ✅ Use id directly as it's a string (ObjectId)
     });
 
     if (!property || property.ownerId !== decoded.userId) {
@@ -24,7 +23,7 @@ export async function PUT(req, { params }) {
     }
 
     const updated = await prisma.property.update({
-      where: { id: parseInt(id) },
+      where: { id },
       data: { title, location, price, availability, amenities, images },
     });
 
@@ -44,7 +43,7 @@ export async function DELETE(req, { params }) {
     const { id } = params;
 
     const property = await prisma.property.findUnique({
-      where: { id: parseInt(id) },
+      where: { id }, // ✅ Use id as string
     });
 
     if (!property || property.ownerId !== decoded.userId) {
@@ -52,7 +51,7 @@ export async function DELETE(req, { params }) {
     }
 
     await prisma.property.delete({
-      where: { id: parseInt(id) },
+      where: { id },
     });
 
     return NextResponse.json({ message: 'Property deleted successfully' });

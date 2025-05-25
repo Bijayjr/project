@@ -1,34 +1,31 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id        Int        @id @default(autoincrement())
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   email     String     @unique
   password  String
   avatarUrl String?
   role      Role       @default(TENANT)
-  properties Property[] // Relation to Property model
+  properties Property[] // No @relation needed here for MongoDB
 }
 
 model Property {
-  id           Int      @id @default(autoincrement())
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
   title        String
   location     String
   price        Float
   availability String
-  amenities    Json     // Store array of amenities
-  images       Json     // Store array of image URLs
-  ownerId      Int
+  amenities    Json
+  images       Json
+  ownerId      String   @db.ObjectId
   owner        User     @relation(fields: [ownerId], references: [id])
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
