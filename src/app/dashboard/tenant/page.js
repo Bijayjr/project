@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Head from 'next/head';
 import Swal from 'sweetalert2';
+import Image from 'next/image';
 
 const AMENITY_OPTIONS = [
   'WiFi',
@@ -180,10 +181,12 @@ export default function TenantDashboard() {
             </button>
             <div className="flex items-center space-x-2">
               {user.avatarUrl && (
-                <img 
+                <Image 
                   src={user.avatarUrl} 
                   alt="Avatar" 
-                  className="h-8 w-8 rounded-full object-cover border-2 border-emerald-400" 
+                  width={32}
+                  height={32}
+                  className="rounded-full object-cover border-2 border-emerald-400" 
                 />
               )}
               <span className="font-medium">{user.name}</span>
@@ -316,9 +319,11 @@ export default function TenantDashboard() {
                   }`}
                 >
                   <div className="relative">
-                    <img
+                    <Image
                       src={property.images[0] || '/placeholder.jpg'}
                       alt={property.title}
+                      width={300}
+                      height={200}
                       className="w-full h-48 object-cover"
                       onError={(e) => {
                         e.target.src = '/placeholder.jpg';

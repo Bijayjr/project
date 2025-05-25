@@ -73,7 +73,7 @@ const Map = ({ properties, activeLocation, onMarkerClick, darkMode, userLocation
         mapInstanceRef.current = null;
       }
     };
-  }, [darkMode]);
+  }, [darkMode, bhutanBounds, thimphu, defaultZoom]);
 
   // Center map on userLocation on initial load
   useEffect(() => {
@@ -262,31 +262,28 @@ const Map = ({ properties, activeLocation, onMarkerClick, darkMode, userLocation
   }, [properties, onMarkerClick]);
 
   useEffect(() => {
-    if (mapRef.current) {
-      const map = mapRef.current;
-      map.setView(phuentsholing, defaultZoom);
-      map.fitBounds(bhutanBounds);
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.setView(phuentsholing, defaultZoom);
+      mapInstanceRef.current.fitBounds(bhutanBounds);
     }
-  }, [phuentsholing, defaultZoom, bhutanBounds, thimphu]);
+  }, [phuentsholing, defaultZoom, bhutanBounds]);
 
   useEffect(() => {
-    if (mapRef.current) {
-      const map = mapRef.current;
+    if (mapInstanceRef.current) {
       if (userLocation && userLocationZoom && hasUserSearched) {
-        map.setView(userLocation, userLocationZoom);
+        mapInstanceRef.current.setView(userLocation, userLocationZoom);
       }
     }
   }, [userLocation, userLocationZoom, hasUserSearched]);
 
   useEffect(() => {
-    if (mapRef.current) {
-      const map = mapRef.current;
+    if (mapInstanceRef.current) {
       if (activeLocation) {
-        map.setView(activeLocation, userLocationZoom || defaultZoom);
+        mapInstanceRef.current.setView(activeLocation, userLocationZoom || defaultZoom);
       } else if (centerOnUserLocation && userLocation) {
-        map.setView(userLocation, userLocationZoom || defaultZoom);
+        mapInstanceRef.current.setView(userLocation, userLocationZoom || defaultZoom);
       } else if (!hasUserSearched) {
-        map.setView(phuentsholing, defaultZoom);
+        mapInstanceRef.current.setView(phuentsholing, defaultZoom);
       }
     }
   }, [activeLocation, userLocation, centerOnUserLocation, userLocationZoom, defaultZoom, phuentsholing, hasUserSearched]);

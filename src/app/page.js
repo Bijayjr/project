@@ -8,6 +8,7 @@ import { useSwipeable } from 'react-swipeable';
 import { motion, AnimatePresence } from 'framer-motion';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Image from 'next/image';
 
 // Register GSAP ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
@@ -765,10 +766,12 @@ export default function Home() {
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                <img
+                <Image
                   ref={houseImageRef}
                   src="/house.png"
                   alt="Living in Harmony in Bhutan"
+                  width={800}
+                  height={600}
                   className="w-full h-auto rounded-lg shadow-lg"
                   style={{ position: 'relative', zIndex: 1000000 }}
                 />
@@ -864,7 +867,7 @@ export default function Home() {
                 className={`p-4 max-w-sm self-end text-right ml-auto ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}
               >
                 <h4 className="text-lg font-semibold mb-2 text-emerald-400">Cultural Immersion</h4>
-                <p className="text-sm">
+                <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   Live like a local with Rento&apos;s homes, designed to immerse you in Bhutan&apos;s vibrant culture, from proximity to sacred sites to interiors reflecting traditional craftsmanship.
                 </p>
               </motion.div>
@@ -903,9 +906,11 @@ export default function Home() {
               </motion.button>
 
               <div className="relative">
-                <img
+                <Image
                   src={selectedProperty.image}
                   alt={selectedProperty.title}
+                  width={800}
+                  height={400}
                   className="w-full h-72 object-cover rounded-xl"
                 />
                 <div className="absolute bottom-4 left-4 bg-emerald-600/80 text-white px-4 py-2 rounded-full text-sm font-medium">
