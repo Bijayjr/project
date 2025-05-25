@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -23,7 +23,7 @@ const Map = ({ properties, activeLocation, onMarkerClick, darkMode, userLocation
     L.latLng(28.3, 92.1)  // NE corner
   );
   const thimphu = [27.4728, 89.6390];
-  const phuentsholing = [26.8517, 89.3883];
+  const phuentsholing = useMemo(() => [26.8516, 89.3883], []);
   const defaultZoom = 12;
   const userLocationZoom = 14;
 
@@ -87,7 +87,7 @@ const Map = ({ properties, activeLocation, onMarkerClick, darkMode, userLocation
       mapInstanceRef.current.setView(userLocation, userLocationZoom);
       console.log('Initial Map View: Centered on userLocation', { userLocation, zoom: userLocationZoom });
     }
-  }, [userLocation]);
+  }, [userLocation, userLocationZoom, hasUserSearched]);
 
   // Update map center when activeLocation or centerOnUserLocation changes
   useEffect(() => {
@@ -112,7 +112,7 @@ const Map = ({ properties, activeLocation, onMarkerClick, darkMode, userLocation
       mapInstanceRef.current.setView(phuentsholing, defaultZoom);
       console.log('Map View Updated: Fallback to Phuentsholing', { center: phuentsholing, zoom: defaultZoom });
     }
-  }, [activeLocation, userLocation, centerOnUserLocation]);
+  }, [activeLocation, userLocation, centerOnUserLocation, userLocationZoom, defaultZoom, phuentsholing, hasUserSearched]);
 
   // Add or update user location marker
   useEffect(() => {
@@ -260,6 +260,36 @@ const Map = ({ properties, activeLocation, onMarkerClick, darkMode, userLocation
       });
     }
   }, [properties, onMarkerClick]);
+
+  useEffect(() => {
+    if (mapRef.current) {
+      const map = mapRef.current;
+      map.setView(phuentsholing, defaultZoom);
+      map.fitBounds(bhutanBounds);
+    }
+  }, [phuentsholing, defaultZoom, bhutanBounds, thimphu]);
+
+  useEffect(() => {
+    if (mapRef.current) {
+      const map = mapRef.current;
+      if (userLocation && userLocationZoom && hasUserSearched) {
+        map.setView(userLocation, userLocationZoom);
+      }
+    }
+  }, [userLocation, userLocationZoom, hasUserSearched]);
+
+  useEffect(() => {
+    if (mapRef.current) {
+      const map = mapRef.current;
+      if (activeLocation) {
+        map.setView(activeLocation, userLocationZoom || defaultZoom);
+      } else if (centerOnUserLocation && userLocation) {
+        map.setView(userLocation, userLocationZoom || defaultZoom);
+      } else if (!hasUserSearched) {
+        map.setView(phuentsholing, defaultZoom);
+      }
+    }
+  }, [activeLocation, userLocation, centerOnUserLocation, userLocationZoom, defaultZoom, phuentsholing, hasUserSearched]);
 
   return (
     <div

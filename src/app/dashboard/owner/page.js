@@ -1,10 +1,11 @@
 'use client';
 
 import Swal from 'sweetalert2';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import Head from 'next/head';
+import Image from 'next/image';
 
 const AMENITY_OPTIONS = [
   'WiFi',
@@ -45,34 +46,34 @@ export default function OwnerDashboard() {
   // Configure axios defaults
   axios.defaults.withCredentials = true;
 
+  const fetchUser = useCallback(async () => {
+    try {
+      const res = await axios.get('/api/user/me');
+      setUser(res.data);
+    } catch (err) {
+      console.error('Error fetching user:', err);
+    }
+  }, []);
+
+  const fetchProperties = useCallback(async () => {
+    try {
+      const res = await axios.get('/api/properties');
+      setProperties(res.data);
+    } catch (err) {
+      console.error('Error fetching properties:', err);
+    }
+  }, []);
+
   useEffect(() => {
     fetchUser();
     fetchProperties();
-  }, []);
+  }, [fetchUser, fetchProperties]);
 
   function handleAuthError(err) {
     if (err.response?.status === 401) {
       router.push('/login');
     } else {
       console.error(err);
-    }
-  }
-
-  async function fetchUser() {
-    try {
-      const res = await axios.get('/api/user/me');
-      setUser(res.data);
-    } catch (err) {
-      handleAuthError(err);
-    }
-  }
-
-  async function fetchProperties() {
-    try {
-      const res = await axios.get('/api/properties');
-      setProperties(res.data);
-    } catch (err) {
-      handleAuthError(err);
     }
   }
 
@@ -273,10 +274,12 @@ export default function OwnerDashboard() {
             </button>
             <div className="flex items-center space-x-2">
               {user.avatarUrl && (
-                <img 
+                <Image 
                   src={user.avatarUrl} 
                   alt="Avatar" 
-                  className="h-8 w-8 rounded-full object-cover border-2 border-emerald-400" 
+                  width={32}
+                  height={32}
+                  className="rounded-full object-cover border-2 border-emerald-400" 
                 />
               )}
               <span className="font-medium">{user.name}</span>
@@ -361,10 +364,12 @@ export default function OwnerDashboard() {
                   }`}
                 >
                   <div className="relative">
-                    <img
-                      src={property.images[0] || '/placeholder.jpg'}
+                    <Image
+                      src={property.images[0]}
                       alt={property.title}
-                      className="w-full h-48 object-cover"
+                      width={300}
+                      height={200}
+                      className="w-full h-48 object-cover rounded-t-lg"
                     />
                     <span className={`absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-semibold ${
                       property.availability === 'Available' 
@@ -558,9 +563,11 @@ export default function OwnerDashboard() {
                       <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto">
                         {newProperty.images.map((img, index) => (
                           <div key={index} className="relative group">
-                            <img
+                            <Image
                               src={img}
                               alt={`Preview ${index + 1}`}
+                              width={80}
+                              height={80}
                               className="h-20 w-20 object-cover rounded"
                             />
                             <button

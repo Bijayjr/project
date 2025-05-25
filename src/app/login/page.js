@@ -54,7 +54,7 @@ export default function Login() {
     };
     
     checkAuth();
-  }, []);
+  }, [router]);
 
   return (
     <div className="min-h-screen flex flex-col">

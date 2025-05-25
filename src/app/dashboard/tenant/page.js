@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Head from 'next/head';
 import Swal from 'sweetalert2';
@@ -39,16 +39,7 @@ export default function TenantDashboard() {
 
   const router = useRouter();
 
-  useEffect(() => {
-    fetchUser();
-    fetchAvailableProperties();
-  }, []);
-
-  useEffect(() => {
-    applyFilters();
-  }, [filters, properties]);
-
-  async function fetchUser() {
+  const fetchUser = useCallback(async () => {
     try {
       const res = await fetch('/api/user/me');
       if (!res.ok) throw new Error('Failed to fetch user');
@@ -56,9 +47,9 @@ export default function TenantDashboard() {
     } catch (err) {
       router.push('/login');
     }
-  }
+  }, [router]);
 
-  async function fetchAvailableProperties() {
+  const fetchAvailableProperties = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch('/api/properties/available');
@@ -72,9 +63,9 @@ export default function TenantDashboard() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
-  function applyFilters() {
+  const applyFilters = useCallback(() => {
     let result = [...properties];
 
     // Filter by price range
@@ -102,7 +93,16 @@ export default function TenantDashboard() {
     }
 
     setFilteredProperties(result);
-  }
+  }, [properties, filters]);
+
+  useEffect(() => {
+    fetchUser();
+    fetchAvailableProperties();
+  }, [fetchUser, fetchAvailableProperties]);
+
+  useEffect(() => {
+    applyFilters();
+  }, [applyFilters]);
 
   function handleFilterChange(e) {
     const { name, value } = e.target;

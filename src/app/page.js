@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
@@ -43,14 +43,28 @@ export default function Home() {
   ];
 
   // Dzongkhag coordinates
-  const dzongkhagCoordinates = {
-    Thimphu: { coordinates: [27.4728, 89.6390], zoom: 12 },
-    Paro: { coordinates: [27.4339, 89.4163], zoom: 12 },
-    Punakha: { coordinates: [27.6114, 89.8724], zoom: 12 },
-    Haa: { coordinates: [27.3686, 89.2908], zoom: 12 },
-    Bumthang: { coordinates: [27.6420, 90.6770], zoom: 12 },
-    Wangdue: { coordinates: [27.4870, 89.8990], zoom: 12 },
-  };
+  const dzongkhagCoordinates = useMemo(() => ({
+    'Thimphu': {
+      coordinates: [27.4728, 89.6390],
+      description: 'The capital city of Bhutan'
+    },
+    'Paro': {
+      coordinates: [27.4333, 89.4167],
+      description: 'Home to the international airport'
+    },
+    'Phuentsholing': {
+      coordinates: [26.8516, 89.3883],
+      description: 'The commercial hub of Bhutan'
+    },
+    'Punakha': {
+      coordinates: [27.5917, 89.8633],
+      description: 'The former capital of Bhutan'
+    },
+    'Bumthang': {
+      coordinates: [27.5333, 90.7333],
+      description: 'The spiritual heart of Bhutan'
+    }
+  }), []);
 
   // Calculate distance function
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -216,7 +230,7 @@ export default function Home() {
         });
       }
     }
-  }, []);
+  }, [houseImageRef]);
 
   // Filter properties
   const filteredProperties = properties.filter((property) => {
@@ -851,7 +865,7 @@ export default function Home() {
               >
                 <h4 className="text-lg font-semibold mb-2 text-emerald-400">Cultural Immersion</h4>
                 <p className="text-sm">
-                  Live like a local with Rento's homes, designed to immerse you in Bhutan's vibrant culture, from proximity to sacred sites to interiors reflecting traditional craftsmanship.
+                  Live like a local with Rento&apos;s homes, designed to immerse you in Bhutan&apos;s vibrant culture, from proximity to sacred sites to interiors reflecting traditional craftsmanship.
                 </p>
               </motion.div>
             </div>
