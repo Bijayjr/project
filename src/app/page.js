@@ -8,7 +8,6 @@ import { useSwipeable } from 'react-swipeable';
 import { motion, AnimatePresence } from 'framer-motion';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Image from 'next/image';
 
 // Register GSAP ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
@@ -191,7 +190,7 @@ export default function Home() {
       setActiveLocation(dzongkhagCoordinates[selectedDzongkhag].coordinates);
       setCenterOnUserLocation(false);
     }
-  }, [debouncedSearchQuery, selectedDzongkhag, dzongkhagCoordinates]);
+  }, [debouncedSearchQuery, selectedDzongkhag]);
 
   // GSAP Animation for house image
   useEffect(() => {
@@ -650,11 +649,9 @@ export default function Home() {
                       } border border-gray-500/20 hover:shadow-2xl transition-all duration-300`}
                       onClick={() => handlePropertyClick(property)}
                     >
-                      <Image
+                      <img
                         src={property.image}
                         alt={property.title}
-                        width={400}
-                        height={300}
                         className="w-full h-52 object-cover rounded-lg mb-4"
                       />
                       <h4 className="text-lg font-semibold">{property.title}</h4>
@@ -754,12 +751,10 @@ export default function Home() {
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                <Image
+                <img
                   ref={houseImageRef}
                   src="/house.png"
                   alt="Living in Harmony in Bhutan"
-                  width={800}
-                  height={600}
                   className="w-full h-auto rounded-lg shadow-lg"
                   style={{ position: 'relative', zIndex: 1000000 }}
                 />
@@ -894,11 +889,9 @@ export default function Home() {
               </motion.button>
 
               <div className="relative">
-                <Image
+                <img
                   src={selectedProperty.image}
                   alt={selectedProperty.title}
-                  width={800}
-                  height={400}
                   className="w-full h-72 object-cover rounded-xl"
                 />
                 <div className="absolute bottom-4 left-4 bg-emerald-600/80 text-white px-4 py-2 rounded-full text-sm font-medium">
